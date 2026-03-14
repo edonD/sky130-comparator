@@ -9,7 +9,7 @@ StrongARM latch comparator in SkyWater SKY130 (130nm) technology, designed and v
 | Spec | Target | Worst-Case Result | Margin | Status |
 |------|--------|-------------------|--------|--------|
 | Input-referred offset | < 5 mV | 2.32 mV (MC 4.5σ) | 53.7% | **PASS** |
-| Rise-time delay (CLK→output) | < 100 ns | 9.13 ns (PVT) | 90.9% | **PASS** |
+| Rise-time delay (CLK→output) | < 100 ns | 8.97 ns (PVT) | 91.0% | **PASS** |
 
 **Validation scope:** 30 PVT corners (3 temps × 2 supplies × 5 process) + 200-sample Monte Carlo at mean ± 4.5σ.
 
@@ -60,7 +60,7 @@ Classic StrongARM latch comparator with output buffers:
 | Wlatn | 1.0 | μm | NMOS latch width — minimum for fast regeneration |
 | Llatn | 0.5 | μm | NMOS latch length — longer L eliminates PVT offset |
 | Wtail | 25.0 | μm | Tail current source width |
-| Ltail | 0.5 | μm | Tail current source length |
+| Ltail | 0.15 | μm | Tail current source length — minimum for max current |
 | Wrst | 3.0 | μm | Reset PMOS width (L=0.15μm fixed) |
 
 ---
@@ -178,7 +178,7 @@ All 30 PVT corners pass with negligible systematic offset:
 | fs | 175 | 1.2 | 0.01 | 1.51 | PASS |
 | fs | 175 | 1.8 | 0.01 | 0.53 | PASS |
 
-**Worst-case corner for delay:** fs/-40°C/1.2V (9.13 ns)
+**Worst-case corner for delay:** fs/-40°C/1.2V (8.97 ns)
 **Limiting factor for delay:** Low supply voltage + cold temperature + slow process = reduced drive current and higher threshold voltages.
 
 ---
@@ -204,9 +204,9 @@ The offset distribution follows a half-normal distribution (absolute value of Ga
 
 | Corner | Power (μW) | Notes |
 |--------|-----------|-------|
-| tt/24°C/1.8V | 8.8 | Nominal |
-| ss/-40°C/1.2V | 2.2 | Minimum power (slow, cold, low voltage) |
-| ff/175°C/1.8V | 18.0 | Maximum power (fast, hot, high voltage) |
+| tt/24°C/1.8V | 8.2 | Nominal |
+| ss/-40°C/1.2V | 2.0 | Minimum power (slow, cold, low voltage) |
+| ff/175°C/1.8V | 17.5 | Maximum power (fast, hot, high voltage) |
 
 Power is reasonable for a clocked StrongARM comparator in 130nm (zero static power, only dynamic during evaluation).
 
@@ -229,7 +229,7 @@ Total gate area of 118 μm² is reasonable for a comparator in 130nm. The input 
 | Spec | Target | Worst-Case | Margin (%) | Assessment |
 |------|--------|-----------|------------|------------|
 | Offset | < 5 mV | 2.32 mV | 53.7% | Healthy |
-| Delay | < 100 ns | 9.13 ns | 90.9% | Very large |
+| Delay | < 100 ns | 8.97 ns | 91.0% | Very large |
 
 ---
 
@@ -282,6 +282,7 @@ The Win=50 design (bold) is recommended for robustness against layout parasitics
 |------|--------|----------|-------|-----------|-------|
 | 1 | Design intuition + parametric sweep | StrongARM | 1.00 | 2/2 | Llat=0.5μm eliminates PVT offset, Wlat=5μm |
 | 2 | Latch width optimization | StrongARM | 1.00 | 2/2 | Wlat=1μm: 23% faster, 12% lower power |
+| 3 | Tail length optimization | StrongARM | 1.00 | 2/2 | Ltail=0.15μm: further 2% speed + 7% power reduction |
 
 **Approach:** Rather than blind optimization, used analog design intuition to identify the critical design knobs:
 1. Sized input pair (W×L=50μm²) based on analytical offset formula
