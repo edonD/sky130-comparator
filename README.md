@@ -292,6 +292,7 @@ At 10 MHz (default), the design has ample timing margin at all corners.
 ### Limitations & Watch Items
 - **Metastability at 0mV input:** At ss/175°C/1.2V with exactly zero differential, the latch may not resolve within the evaluation window. This is inherent to any regenerative comparator and acceptable for normal operation with finite input.
 - **Kickback noise:** The large input pair (W=70μm) will inject significant charge onto the input nodes during CLK transitions. If driving from a high-impedance source, a sampling capacitor or input isolation switch is recommended.
+- **LVT Avt uncertainty:** The Avt (matching parameter) for sky130_fd_pr__nfet_01v8_lvt may differ from the standard device (assumed 5 mV·μm). If LVT Avt is ~6 mV·μm (20% worse), the MC offset at 4.5σ would increase to ~2.5 mV, still meeting spec with 50% margin thanks to the large W×L=70μm².
 - **Layout sensitivity:** The input pair must be laid out with careful common-centroid geometry to preserve the offset advantage. Asymmetric routing parasitics could degrade the offset beyond simulation predictions.
 - **Buffer sizing:** The output buffers use fixed minimum-size devices (W=2u/1u, L=0.15u). For driving large loads, additional buffer stages may be needed.
 
@@ -301,12 +302,12 @@ If area is critical, the input pair can be reduced while maintaining acceptable 
 
 | Win | Lin | W×L | MC Offset (4.5σ) | Margin | PVT Offset | Delay | Total Area |
 |-----|-----|-----|-------------------|--------|------------|-------|-----------|
-| **70** | **1.0** | **70** | **1.96 mV** | **61%** | **0.01 mV** | **9.10 ns** | **146 μm²** |
-| 60 | 1.0 | 60 | 2.11 mV | 58% | 0.01 mV | 9.21 ns | 126 μm² |
-| 50 | 1.0 | 50 | 2.48 mV | 50% | 0.01 mV | 8.97 ns | 106 μm² |
-| 35 | 1.0 | 35 | 2.97 mV | 41% | 0.01 mV | ~14 ns | 76 μm² |
+| **70** | **1.0** | **70** | **1.96 mV** | **61%** | **0.01 mV** | **1.64 ns** | **145 μm²** |
+| 60 | 1.0 | 60 | 2.27 mV | 55% | 0.01 mV | 1.60 ns | 124 μm² |
+| 50 | 1.0 | 50 | 2.48 mV | 50% | 0.01 mV | 1.55 ns | 104 μm² |
+| 40 | 1.2 | 48 | 2.53 mV | 49% | 0.01 mV | 1.59 ns | 100 μm² |
 
-The Win=70 design (bold) is recommended for robustness against layout parasitics. Win=60 or Win=50 are valid alternatives for area-constrained designs.
+With LVT input pair, delay is nearly constant across all Win values (1.55-1.64ns). Win=70 (bold) is recommended because LVT devices may have ~20% worse Avt than standard-Vth; the larger W×L provides margin against this uncertainty. For area-constrained designs, Win=50 saves 28% area with 50% offset margin.
 
 ---
 
