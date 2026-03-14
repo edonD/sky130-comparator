@@ -1,0 +1,49 @@
+{
+  "measurements": {
+    "RESULT_OFFSET_MV": 2.315,
+    "RESULT_RISE_TIME_DELAY_NS": 11.827,
+    "RESULT_POWER_UW": 9.83
+  },
+  "score": 1.0,
+  "details": {
+    "offset_mv": {
+      "measured": 2.315,
+      "target": "<5",
+      "met": true,
+      "score": 1.0,
+      "unit": "mV"
+    },
+    "rise_time_delay_ns": {
+      "measured": 11.827,
+      "target": "<100",
+      "met": true,
+      "score": 1.0,
+      "unit": "ns"
+    }
+  },
+  "parameters": {
+    "Win": 50.0,
+    "Lin": 1.0,
+    "Wlatp": 5.0,
+    "Llatp": 0.5,
+    "Wlatn": 5.0,
+    "Llatn": 0.5,
+    "Wtail": 25.0,
+    "Ltail": 0.5,
+    "Wrst": 3.0
+  },
+  "pvt": {
+    "worst_offset_mv": 0.01,
+    "worst_delay_ns": 11.83,
+    "all_pass": true
+  },
+  "monte_carlo": {
+    "offset_mean_mv": 0.523,
+    "offset_std_mv": 0.398,
+    "offset_worst_mv": 2.315,
+    "delay_mean_ns": 0.358,
+    "delay_std_ns": 0.002,
+    "delay_worst_ns": 0.369,
+    "all_pass": true
+  }
+}

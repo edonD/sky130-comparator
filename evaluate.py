@@ -867,7 +867,7 @@ def save_results(best_params: Dict, measurements: Dict, score: float,
                 "delay_worst_ns": mc_results["delay_worst_ns"] if mc_results else None,
                 "all_pass": mc_results["all_pass"] if mc_results else None,
             } if mc_results else None,
-        }, f, indent=2)
+        }, f, indent=2, default=str)
 
     print(f"Saved: best_parameters.csv, measurements.json")
 

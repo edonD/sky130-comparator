@@ -1,1 +1,2 @@
 step	commit	score	topology	specs_met	notes
+1		1.0000	StrongARM	2/2	pvt=PASS mc=PASS wo=0.01mV wd=11.83ns mc_o=2.32mV
