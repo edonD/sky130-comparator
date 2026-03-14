@@ -1,0 +1,77 @@
+* SKY130 StrongARM Latch Comparator
+* Classic StrongARM topology: input pair + cross-coupled inverter latch
+* Parameterized for DE optimization across PVT corners + Monte Carlo
+
+* NOTE: .lib corner and supply voltage are substituted by evaluate.py
+.lib "sky130_models/sky130.lib.spice" {corner}
+
+* Supply — voltage is a parameter for PVT sweep
+Vdd vdd 0 DC {Vsupply}
+Vss vss 0 DC 0
+
+* Clock — 10 MHz (period 100ns, 50ns eval / 50ns precharge)
+Vclk clk 0 PULSE(0 {Vsupply} 0 0.1n 0.1n 50n 100n)
+
+* Differential input: small offset for trip-point measurement
+* Vinp = Vcm + Vdiff/2, Vinm = Vcm - Vdiff/2
+Vinp inp 0 DC {Vinp}
+Vinm inm 0 DC {Vinm}
+
+* === StrongARM Latch Comparator ===
+
+* Tail NMOS (clocked — enables current during evaluation)
+XMtail ntail clk vss vss sky130_fd_pr__nfet_01v8 W={Wtail}u L={Ltail}u nf=1
+
+* Input differential pair (NMOS)
+XM1 d1 inp ntail vss sky130_fd_pr__nfet_01v8 W={Win}u L={Lin}u nf=1
+XM2 d2 inm ntail vss sky130_fd_pr__nfet_01v8 W={Win}u L={Lin}u nf=1
+
+* Reset PMOS (precharge all internal nodes to VDD when CLK=0)
+XMr1 d1 clk vdd vdd sky130_fd_pr__pfet_01v8 W={Wrst}u L=0.15u nf=1
+XMr2 d2 clk vdd vdd sky130_fd_pr__pfet_01v8 W={Wrst}u L=0.15u nf=1
+XMr3 outn clk vdd vdd sky130_fd_pr__pfet_01v8 W={Wrst}u L=0.15u nf=1
+XMr4 outp clk vdd vdd sky130_fd_pr__pfet_01v8 W={Wrst}u L=0.15u nf=1
+
+* Cross-coupled PMOS latch
+XMp1 outp outn vdd vdd sky130_fd_pr__pfet_01v8 W={Wlatp}u L={Llatp}u nf=1
+XMp2 outn outp vdd vdd sky130_fd_pr__pfet_01v8 W={Wlatp}u L={Llatp}u nf=1
+
+* Cross-coupled NMOS latch (sources to input pair drains for signal coupling)
+XMn1 outp outn d1 vss sky130_fd_pr__nfet_01v8 W={Wlatn}u L={Llatn}u nf=1
+XMn2 outn outp d2 vss sky130_fd_pr__nfet_01v8 W={Wlatn}u L={Llatn}u nf=1
+
+* Output buffers (inverters for clean digital output)
+XMbp1 bufp outp vdd vdd sky130_fd_pr__pfet_01v8 W=2u L=0.15u nf=1
+XMbn1 bufp outp vss vss sky130_fd_pr__nfet_01v8 W=1u L=0.15u nf=1
+XMbp2 bufn outn vdd vdd sky130_fd_pr__pfet_01v8 W=2u L=0.15u nf=1
+XMbn2 bufn outn vss vss sky130_fd_pr__nfet_01v8 W=1u L=0.15u nf=1
+
+.options reltol=0.003 method=gear
+.temp {temperature}
+
+* === Measurements ===
+.control
+
+* Transient simulation — 3 complete clock cycles
+tran 0.1n 300n
+
+* Check comparator output at mid-evaluation of 2nd cycle (125ns)
+meas tran outp_val find v(bufp) at=125n
+meas tran outm_val find v(bufn) at=125n
+
+* Rise-time delay: CLK rising edge to output crossing Vsupply/2
+meas tran tclk when v(clk)=0.9 rise=2
+meas tran tout_rise when v(bufp)=0.9 rise=2
+
+* Average supply current for power calculation
+meas tran avg_idd avg i(Vdd) from=50n to=250n
+
+echo "RESULT_OUTP_VAL $&outp_val"
+echo "RESULT_OUTM_VAL $&outm_val"
+echo "RESULT_TCLK $&tclk"
+echo "RESULT_TOUT_RISE $&tout_rise"
+echo "RESULT_AVG_IDD $&avg_idd"
+echo "RESULT_DONE"
+.endc
+
+.end

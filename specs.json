@@ -1,0 +1,25 @@
+{
+  "name": "SKY130 StrongARM Comparator",
+  "supply_v": [1.2, 1.8],
+  "supply_type": "single",
+  "temperatures": [-40, 24, 175],
+  "monte_carlo": {
+    "n_samples": 200,
+    "sigma_target": 4.5,
+    "description": "Design must meet specs at mean +/- 4.5 sigma across MC samples"
+  },
+  "measurements": {
+    "offset_mv": {
+      "target": "<5",
+      "weight": 50,
+      "unit": "mV",
+      "description": "Input-referred offset voltage (worst-case across PVT corners and MC mean +/- 4.5 sigma)"
+    },
+    "rise_time_delay_ns": {
+      "target": "<100",
+      "weight": 50,
+      "unit": "ns",
+      "description": "Rise-time delay from clock edge to valid output (worst-case across PVT corners and MC mean +/- 4.5 sigma)"
+    }
+  }
+}
