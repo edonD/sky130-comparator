@@ -237,11 +237,29 @@ Total gate area of 126 μm² is reasonable for a comparator in 130nm. The input 
 - **Moderate area** — 126 μm² total gate area
 - **Zero static power** — StrongARM only consumes power during clock evaluation
 
+### Combined PVT + MC Robustness
+
+Verified that MC mismatch at the worst PVT corner (ss/-40°C/1.2V) still passes:
+- 100 MC samples at ss/-40/1.2V: all resolve correctly
+- Delay at 4.5σ: 12.29 ns (still 87.7% margin)
+
 ### Limitations & Watch Items
 - **Metastability at 0mV input:** At ss/175°C/1.2V with exactly zero differential, the latch may not resolve within the evaluation window. This is inherent to any regenerative comparator and acceptable for normal operation with finite input.
 - **Kickback noise:** The large input pair (W=50μm) will inject significant charge onto the input nodes during CLK transitions. If driving from a high-impedance source, a sampling capacitor or input isolation switch is recommended.
 - **Layout sensitivity:** The input pair must be laid out with careful common-centroid geometry to preserve the offset advantage. Asymmetric routing parasitics could degrade the offset beyond simulation predictions.
 - **Buffer sizing:** The output buffers use fixed minimum-size devices (W=2u/1u, L=0.15u). For driving large loads, additional buffer stages may be needed.
+
+### Area vs. Margin Trade Study
+
+If area is critical, the input pair can be reduced while maintaining acceptable margin:
+
+| Win | Lin | W×L | MC Offset (4.5σ) | Margin | PVT Offset | Delay | Total Area |
+|-----|-----|-----|-------------------|--------|------------|-------|-----------|
+| **50** | **1.0** | **50** | **2.48 mV** | **50%** | **0.01 mV** | **11.83 ns** | **126 μm²** |
+| 35 | 1.0 | 35 | 2.97 mV | 41% | 0.01 mV | 13.96 ns | 96 μm² |
+| 25 | 1.0 | 25 | 3.51 mV | 30% | 0.09 mV | ~14 ns | 76 μm² |
+
+The Win=50 design (bold) is recommended for robustness against layout parasitics. Win=35 is a valid alternative for area-constrained designs.
 
 ---
 
@@ -256,6 +274,8 @@ Total gate area of 126 μm² is reasonable for a comparator in 130nm. The input 
 2. Swept latch and tail parameters to understand sensitivity
 3. Discovered that latch channel length is the critical knob for PVT offset
 4. Verified with waveforms, swap test, and full validation
+5. Tested combined PVT+MC robustness at worst corner
+6. Explored area vs. margin tradeoff for design flexibility
 
 ---
 
