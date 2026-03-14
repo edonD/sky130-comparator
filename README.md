@@ -278,7 +278,8 @@ DC operating point during evaluation (CLK=VDD):
 
 Verified that MC mismatch at the worst PVT corner (ss/-40°C/1.2V) still passes:
 - 100 MC samples at ss/-40/1.2V: all resolve correctly
-- Delay at 4.5σ: 12.29 ns (still 87.7% margin)
+- Delay at 4.5σ: 1.64 ns (still 98.4% margin)
+- With LVT input pair, delay variation with mismatch is negligible
 
 ### Maximum Clock Frequency
 
