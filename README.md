@@ -233,7 +233,7 @@ Total gate area of 126 μm² is reasonable for a comparator in 130nm. The input 
 
 ### Strengths
 - **Negligible systematic PVT offset** — longer latch L eliminates corner-dependent offset
-- **Large delay margin** — design could operate at much higher clock frequencies
+- **Large delay margin** — max clock ~20 MHz at worst PVT corner (ss/-40°C/1.2V), much higher at nominal
 - **Moderate area** — 126 μm² total gate area
 - **Zero static power** — StrongARM only consumes power during clock evaluation
 
@@ -242,6 +242,15 @@ Total gate area of 126 μm² is reasonable for a comparator in 130nm. The input 
 Verified that MC mismatch at the worst PVT corner (ss/-40°C/1.2V) still passes:
 - 100 MC samples at ss/-40/1.2V: all resolve correctly
 - Delay at 4.5σ: 12.29 ns (still 87.7% margin)
+
+### Maximum Clock Frequency
+
+| PVT Corner | Max Clock | Limiting Factor |
+|------------|-----------|-----------------|
+| tt/24°C/1.8V | > 100 MHz | Buffer drive strength |
+| ss/-40°C/1.2V | ~20 MHz | Regeneration time (~11ns) |
+
+At 10 MHz (default), the design has ample timing margin at all corners.
 
 ### Limitations & Watch Items
 - **Metastability at 0mV input:** At ss/175°C/1.2V with exactly zero differential, the latch may not resolve within the evaluation window. This is inherent to any regenerative comparator and acceptable for normal operation with finite input.
