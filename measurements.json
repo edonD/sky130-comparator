@@ -4,17 +4,17 @@
     "outp_val": 1.8,
     "outm_val": 1.735661e-07,
     "tclk": 1.0005e-07,
-    "tout_rise": 1.004075e-07,
-    "avg_idd": -5.53598e-06,
+    "tout_rise": 1.00425e-07,
+    "avg_idd": -4.883421e-06,
     "RESULT_OUTP_VAL": 1.8,
     "RESULT_OUTM_VAL": 1.73566e-07,
     "RESULT_TCLK": 1.0005e-07,
-    "RESULT_TOUT_RISE": 1.00407e-07,
-    "RESULT_AVG_IDD": -5.53598e-06,
-    "RESULT_RISE_TIME_DELAY_NS": 11.827000000000004,
+    "RESULT_TOUT_RISE": 1.00425e-07,
+    "RESULT_AVG_IDD": -4.88342e-06,
+    "RESULT_RISE_TIME_DELAY_NS": 9.132999999999994,
     "RESULT_SENSITIVITY_OK": 1,
     "RESULT_OFFSET_MV": 2.315101119825458,
-    "RESULT_POWER_UW": 9.964764,
+    "RESULT_POWER_UW": 8.790156000000001,
     "corner": "tt",
     "temperature": 24,
     "supply_v": 1.8
@@ -29,7 +29,7 @@
       "unit": "mV"
     },
     "rise_time_delay_ns": {
-      "measured": 11.827000000000004,
+      "measured": 9.132999999999994,
       "target": "<100",
       "met": true,
       "score": 1.0,
@@ -42,23 +42,23 @@
     "Llatp": 0.5,
     "Ltail": 0.5,
     "Win": 50.0,
-    "Wlatn": 5.0,
-    "Wlatp": 5.0,
+    "Wlatn": 1.0,
+    "Wlatp": 1.0,
     "Wrst": 3.0,
     "Wtail": 25.0
   },
   "pvt": {
     "worst_offset_mv": 0.01220703125,
-    "worst_delay_ns": 11.827000000000004,
+    "worst_delay_ns": 9.132999999999994,
     "all_pass": true
   },
   "monte_carlo": {
     "offset_mean_mv": 0.5229085337627558,
     "offset_std_mv": 0.3982650191250449,
     "offset_worst_mv": 2.315101119825458,
-    "delay_mean_ns": 0.3576699999999991,
-    "delay_std_ns": 0.0024085472799992664,
-    "delay_worst_ns": 0.3685084627599958,
+    "delay_mean_ns": 0.37669500000000106,
+    "delay_std_ns": 0.009119867049469653,
+    "delay_worst_ns": 0.4177344017226145,
     "all_pass": "True"
   }
 }

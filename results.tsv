@@ -1,2 +1,3 @@
 step	commit	score	topology	specs_met	notes
-1		1.0000	StrongARM	2/2	pvt=PASS mc=PASS wo=0.01mV wd=11.83ns mc_o=2.32mV
+1		1.0000	StrongARM	2/2	pvt=PASS mc=PASS wo=0.01mV wd=11.83ns mc_o=2.32mV Wlat=5
+2		1.0000	StrongARM	2/2	pvt=PASS mc=PASS wo=0.01mV wd=9.13ns mc_o=2.32mV Wlat=1 (23% faster)
