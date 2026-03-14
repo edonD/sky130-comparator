@@ -4,17 +4,17 @@
     "outp_val": 1.8,
     "outm_val": 1.735661e-07,
     "tclk": 1.0005e-07,
-    "tout_rise": 1.004576e-07,
-    "avg_idd": -5.136774e-06,
+    "tout_rise": 1.00503e-07,
+    "avg_idd": -5.963034e-06,
     "RESULT_OUTP_VAL": 1.8,
     "RESULT_OUTM_VAL": 1.73566e-07,
     "RESULT_TCLK": 1.0005e-07,
-    "RESULT_TOUT_RISE": 1.00458e-07,
-    "RESULT_AVG_IDD": -5.13677e-06,
-    "RESULT_RISE_TIME_DELAY_NS": 9.206999999999997,
+    "RESULT_TOUT_RISE": 1.00503e-07,
+    "RESULT_AVG_IDD": -5.96303e-06,
+    "RESULT_RISE_TIME_DELAY_NS": 9.100999999999997,
     "RESULT_SENSITIVITY_OK": 1,
-    "RESULT_OFFSET_MV": 2.1133885103897896,
-    "RESULT_POWER_UW": 9.246186,
+    "RESULT_OFFSET_MV": 1.9566175615472394,
+    "RESULT_POWER_UW": 10.733454,
     "corner": "tt",
     "temperature": 24,
     "supply_v": 1.8
@@ -22,14 +22,14 @@
   "score": 1.0,
   "details": {
     "offset_mv": {
-      "measured": 2.1133885103897896,
+      "measured": 1.9566175615472394,
       "target": "<5",
       "met": "True",
       "score": 1.0,
       "unit": "mV"
     },
     "rise_time_delay_ns": {
-      "measured": 9.206999999999997,
+      "measured": 9.100999999999997,
       "target": "<100",
       "met": true,
       "score": 1.0,
@@ -37,7 +37,7 @@
     }
   },
   "parameters": {
-    "Win": 60.0,
+    "Win": 70.0,
     "Lin": 1.0,
     "Wlatp": 1.0,
     "Llatp": 0.5,
@@ -49,16 +49,16 @@
   },
   "pvt": {
     "worst_offset_mv": 0.01220703125,
-    "worst_delay_ns": 9.206999999999997,
+    "worst_delay_ns": 9.100999999999997,
     "all_pass": true
   },
   "monte_carlo": {
-    "offset_mean_mv": 0.47734799908968845,
-    "offset_std_mv": 0.3635645580666892,
-    "offset_worst_mv": 2.1133885103897896,
-    "delay_mean_ns": 0.40803999999999957,
-    "delay_std_ns": 0.002389225816035401,
-    "delay_worst_ns": 0.4187915161721589,
+    "offset_mean_mv": 0.4419383721434433,
+    "offset_std_mv": 0.3365953754230658,
+    "offset_worst_mv": 1.9566175615472394,
+    "delay_mean_ns": 0.43843999999999966,
+    "delay_std_ns": 0.010808626184674182,
+    "delay_worst_ns": 0.48707881783103346,
     "all_pass": "True"
   }
 }
