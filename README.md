@@ -224,6 +224,24 @@ Power is reasonable for a clocked StrongARM comparator in 130nm (zero static pow
 
 Total gate area of 145 μm² is reasonable for a comparator in 130nm. The input pair dominates (96% of total area), which is expected since offset is the primary spec driver.
 
+### Operating Point Analysis (tt/24°C/1.8V)
+
+DC operating point during evaluation (CLK=VDD):
+
+| Device | Vgs (V) | Vds (V) | Id (μA) | Vth (V) | Region |
+|--------|---------|---------|---------|---------|--------|
+| Tail (XMtail) | 1.800 | 0.0002 | 2.99 | 0.727 | Triode (post-eval steady state) |
+| Input M1 (inp) | 0.902 | 0.0002 | 1.49 | 0.558 | Triode (post-eval steady state) |
+| Input M2 (inm) | 0.897 | 0.0002 | 1.49 | 0.558 | Triode (post-eval steady state) |
+| PMOS latch P1 | -1.076 | -1.076 | 1.49 | Saturation |
+| NMOS latch N1 | 0.724 | 0.724 | 1.49 | Saturation |
+
+**Note:** The DC OP shows the post-evaluation steady state where d1/d2 ≈ 0V. During the actual transient evaluation:
+- The input pair starts in **saturation** (d1/d2 ≈ VDD → large Vds)
+- The tail acts as a **current source** (Vds >> Vdsat initially)
+- Input pair overdrive: Vgs - Vth ≈ 0.34V (adequate for steering)
+- Low DC current densities (0.02-0.37 μA/μm) are normal for a dynamic StrongARM comparator
+
 ### Design Margin Summary
 
 | Spec | Target | Worst-Case | Margin (%) | Assessment |
