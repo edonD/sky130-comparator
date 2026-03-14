@@ -4,3 +4,4 @@ step	commit	score	topology	specs_met	notes
 3		1.0000	StrongARM	2/2	pvt=PASS mc=PASS wo=0.01mV wd=8.97ns mc_o=2.32mV Ltail=0.15 (7% lower power)
 4		1.0000	StrongARM	2/2	pvt=PASS mc=PASS wo=0.01mV wd=9.21ns mc_o=2.11mV Win=60 Wtail=5 Wrst=2 (better offset margin)
 5		1.0000	StrongARM	2/2	pvt=PASS mc=PASS wo=0.01mV wd=9.10ns mc_o=1.96mV Win=70 (61% offset margin)
+6		1.0000	StrongARM	2/2	pvt=PASS mc=PASS wo=0.01mV wd=8.52ns mc_o=1.96mV Wlat=0.5 Wtail=8 (6.4% faster)
