@@ -4,17 +4,17 @@
     "outp_val": 1.8,
     "outm_val": 1.735661e-07,
     "tclk": 1.0005e-07,
-    "tout_rise": 1.003662e-07,
-    "avg_idd": -4.534881e-06,
+    "tout_rise": 1.004576e-07,
+    "avg_idd": -5.136774e-06,
     "RESULT_OUTP_VAL": 1.8,
     "RESULT_OUTM_VAL": 1.73566e-07,
     "RESULT_TCLK": 1.0005e-07,
-    "RESULT_TOUT_RISE": 1.00366e-07,
-    "RESULT_AVG_IDD": -4.53488e-06,
-    "RESULT_RISE_TIME_DELAY_NS": 8.970999999999995,
+    "RESULT_TOUT_RISE": 1.00458e-07,
+    "RESULT_AVG_IDD": -5.13677e-06,
+    "RESULT_RISE_TIME_DELAY_NS": 9.206999999999997,
     "RESULT_SENSITIVITY_OK": 1,
-    "RESULT_OFFSET_MV": 2.315101119825458,
-    "RESULT_POWER_UW": 8.162784,
+    "RESULT_OFFSET_MV": 2.1133885103897896,
+    "RESULT_POWER_UW": 9.246186,
     "corner": "tt",
     "temperature": 24,
     "supply_v": 1.8
@@ -22,14 +22,14 @@
   "score": 1.0,
   "details": {
     "offset_mv": {
-      "measured": 2.315101119825458,
+      "measured": 2.1133885103897896,
       "target": "<5",
       "met": "True",
       "score": 1.0,
       "unit": "mV"
     },
     "rise_time_delay_ns": {
-      "measured": 8.970999999999995,
+      "measured": 9.206999999999997,
       "target": "<100",
       "met": true,
       "score": 1.0,
@@ -37,28 +37,28 @@
     }
   },
   "parameters": {
+    "Win": 60.0,
     "Lin": 1.0,
-    "Llatn": 0.5,
-    "Llatp": 0.5,
-    "Ltail": 0.15,
-    "Win": 50.0,
-    "Wlatn": 1.0,
     "Wlatp": 1.0,
-    "Wrst": 3.0,
-    "Wtail": 25.0
+    "Llatp": 0.5,
+    "Wlatn": 1.0,
+    "Llatn": 0.5,
+    "Wtail": 5.0,
+    "Ltail": 0.15,
+    "Wrst": 2.0
   },
   "pvt": {
     "worst_offset_mv": 0.01220703125,
-    "worst_delay_ns": 8.970999999999995,
+    "worst_delay_ns": 9.206999999999997,
     "all_pass": true
   },
   "monte_carlo": {
-    "offset_mean_mv": 0.5229085337627558,
-    "offset_std_mv": 0.3982650191250449,
-    "offset_worst_mv": 2.315101119825458,
-    "delay_mean_ns": 0.3156350000000012,
-    "delay_std_ns": 0.006059024261381185,
-    "delay_worst_ns": 0.34290060917621656,
+    "offset_mean_mv": 0.47734799908968845,
+    "offset_std_mv": 0.3635645580666892,
+    "offset_worst_mv": 2.1133885103897896,
+    "delay_mean_ns": 0.40803999999999957,
+    "delay_std_ns": 0.002389225816035401,
+    "delay_worst_ns": 0.4187915161721589,
     "all_pass": "True"
   }
 }

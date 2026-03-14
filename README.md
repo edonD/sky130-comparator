@@ -8,8 +8,8 @@ StrongARM latch comparator in SkyWater SKY130 (130nm) technology, designed and v
 
 | Spec | Target | Worst-Case Result | Margin | Status |
 |------|--------|-------------------|--------|--------|
-| Input-referred offset | < 5 mV | 2.32 mV (MC 4.5σ) | 53.7% | **PASS** |
-| Rise-time delay (CLK→output) | < 100 ns | 8.97 ns (PVT) | 91.0% | **PASS** |
+| Input-referred offset | < 5 mV | 2.11 mV (MC 4.5σ) | 57.7% | **PASS** |
+| Rise-time delay (CLK→output) | < 100 ns | 9.21 ns (PVT) | 90.8% | **PASS** |
 
 **Validation scope:** 30 PVT corners (3 temps × 2 supplies × 5 process) + 200-sample Monte Carlo at mean ± 4.5σ.
 
@@ -53,25 +53,25 @@ Classic StrongARM latch comparator with output buffers:
 
 | Parameter | Value | Unit | Role |
 |-----------|-------|------|------|
-| Win | 50.0 | μm | Input pair width — large for low offset |
+| Win | 60.0 | μm | Input pair width — large for low offset |
 | Lin | 1.0 | μm | Input pair length — contributes to W×L area |
 | Wlatp | 1.0 | μm | PMOS latch width — minimum for fast regeneration |
 | Llatp | 0.5 | μm | PMOS latch length — longer L eliminates PVT offset |
 | Wlatn | 1.0 | μm | NMOS latch width — minimum for fast regeneration |
 | Llatn | 0.5 | μm | NMOS latch length — longer L eliminates PVT offset |
-| Wtail | 25.0 | μm | Tail current source width |
+| Wtail | 5.0 | μm | Tail current source width — right-sized for evaluation |
 | Ltail | 0.15 | μm | Tail current source length — minimum for max current |
-| Wrst | 3.0 | μm | Reset PMOS width (L=0.15μm fixed) |
+| Wrst | 2.0 | μm | Reset PMOS width (L=0.15μm fixed) |
 
 ---
 
 ## Key Design Decisions & Rationale
 
-### 1. Large Input Pair (W×L = 50 μm²)
+### 1. Large Input Pair (W×L = 60 μm²)
 
 The input-referred offset is dominated by Vth mismatch: σ_Vth = Avt / √(W×L), where Avt ≈ 5 mV·μm for SKY130 nfet_01v8.
 
-With Win=50μm, Lin=1.0μm: σ_Vth = 5/√50 = 0.707 mV. At 4.5σ, the Monte Carlo offset bound is ~2.3 mV, providing 53% margin on the 5 mV spec.
+With Win=60μm, Lin=1.0μm: σ_Vth = 5/√60 = 0.645 mV. At 4.5σ, the Monte Carlo offset bound is ~2.1 mV, providing 57.7% margin on the 5 mV spec.
 
 ### 2. Longer Latch Channel Length (L=0.5μm)
 
@@ -79,7 +79,7 @@ With Win=50μm, Lin=1.0μm: σ_Vth = 5/√50 = 0.707 mV. At 4.5σ, the Monte Car
 
 Increasing latch L from 0.20μm to 0.50μm completely eliminated this systematic PVT offset (from ~5mV to <0.01mV at all 30 corners). The mechanism: longer channels reduce short-channel effects that create asymmetric behavior across process corners.
 
-**Tradeoff:** Longer latch L slightly increases delay due to larger parasitic capacitance, but delay was never close to the 100ns spec (worst case: 9.13 ns).
+**Tradeoff:** Longer latch L slightly increases delay due to larger parasitic capacitance, but delay was never close to the 100ns spec (worst case: 9.21 ns).
 
 ### 3. Small Latch Width (W=1.0μm)
 
@@ -106,8 +106,8 @@ The key finding: simply increasing input pair size does NOT fix systematic PVT o
 | Metric | Value |
 |--------|-------|
 | Offset | < 0.01 mV |
-| Rise-time delay | 0.38 ns |
-| Power | 8.8 μW |
+| Rise-time delay | 0.41 ns |
+| Power | 9.25 μW |
 | Output levels | bufp = 1.800V, bufn = 0.000V |
 
 ### Transient Waveforms
@@ -122,7 +122,7 @@ Clean StrongARM behavior:
 - **Regeneration:** Cross-coupled latch amplifies the difference → outp goes to 0, outn stays at VDD
 - **Buffer outputs:** bufp = VDD (high), bufn = 0 (low)
 
-**Worst Delay Corner (ss/-40°C/1.2V, 5mV input differential):**
+**Worst Delay Corner (fs/-40°C/1.2V, 5mV input differential):**
 
 ![Worst Delay Waveforms](plots/waveforms_worst_delay.png)
 
@@ -147,38 +147,38 @@ All 30 PVT corners pass with negligible systematic offset:
 
 | Corner | Temp (°C) | Supply (V) | Offset (mV) | Delay (ns) | Status |
 |--------|-----------|------------|-------------|------------|--------|
-| tt | -40 | 1.2 | 0.01 | 4.80 | PASS |
-| tt | -40 | 1.8 | 0.01 | 0.31 | PASS |
-| tt | 24 | 1.2 | 0.01 | 2.09 | PASS |
-| tt | 24 | 1.8 | 0.01 | 0.38 | PASS |
-| tt | 175 | 1.2 | 0.01 | 1.22 | PASS |
-| tt | 175 | 1.8 | 0.01 | 0.50 | PASS |
-| ss | -40 | 1.2 | 0.01 | 8.46 | PASS |
-| ss | -40 | 1.8 | 0.01 | 0.37 | PASS |
-| ss | 24 | 1.2 | 0.01 | 3.18 | PASS |
-| ss | 24 | 1.8 | 0.01 | 0.43 | PASS |
-| ss | 175 | 1.2 | 0.01 | 1.57 | PASS |
-| ss | 175 | 1.8 | 0.01 | 0.58 | PASS |
-| ff | -40 | 1.2 | 0.01 | 2.78 | PASS |
-| ff | -40 | 1.8 | 0.01 | 0.28 | PASS |
-| ff | 24 | 1.2 | 0.01 | 1.38 | PASS |
-| ff | 24 | 1.8 | 0.01 | 0.33 | PASS |
-| ff | 175 | 1.2 | 0.01 | 0.97 | PASS |
-| ff | 175 | 1.8 | 0.01 | 0.46 | PASS |
-| sf | -40 | 1.2 | 0.01 | 2.70 | PASS |
-| sf | -40 | 1.8 | 0.01 | 0.30 | PASS |
-| sf | 24 | 1.2 | 0.01 | 1.40 | PASS |
-| sf | 24 | 1.8 | 0.01 | 0.35 | PASS |
-| sf | 175 | 1.2 | 0.01 | 1.03 | PASS |
-| sf | 175 | 1.8 | 0.01 | 0.48 | PASS |
-| fs | -40 | 1.2 | 0.01 | 9.13 | PASS |
-| fs | -40 | 1.8 | 0.01 | 0.32 | PASS |
-| fs | 24 | 1.2 | 0.01 | 3.31 | PASS |
-| fs | 24 | 1.8 | 0.01 | 0.39 | PASS |
-| fs | 175 | 1.2 | 0.01 | 1.51 | PASS |
-| fs | 175 | 1.8 | 0.01 | 0.53 | PASS |
+| tt | -40 | 1.2 | 0.01 | 4.89 | PASS |
+| tt | -40 | 1.8 | 0.01 | 0.33 | PASS |
+| tt | 24 | 1.2 | 0.01 | 2.35 | PASS |
+| tt | 24 | 1.8 | 0.01 | 0.41 | PASS |
+| tt | 175 | 1.2 | 0.01 | 1.43 | PASS |
+| tt | 175 | 1.8 | 0.01 | 0.57 | PASS |
+| ss | -40 | 1.2 | 0.01 | 8.40 | PASS |
+| ss | -40 | 1.8 | 0.01 | 0.41 | PASS |
+| ss | 24 | 1.2 | 0.01 | 3.52 | PASS |
+| ss | 24 | 1.8 | 0.01 | 0.47 | PASS |
+| ss | 175 | 1.2 | 0.01 | 1.85 | PASS |
+| ss | 175 | 1.8 | 0.01 | 0.64 | PASS |
+| ff | -40 | 1.2 | 0.01 | 2.90 | PASS |
+| ff | -40 | 1.8 | 0.01 | 0.29 | PASS |
+| ff | 24 | 1.2 | 0.01 | 1.59 | PASS |
+| ff | 24 | 1.8 | 0.01 | 0.36 | PASS |
+| ff | 175 | 1.2 | 0.01 | 1.14 | PASS |
+| ff | 175 | 1.8 | 0.01 | 0.49 | PASS |
+| sf | -40 | 1.2 | 0.01 | 2.79 | PASS |
+| sf | -40 | 1.8 | 0.01 | 0.31 | PASS |
+| sf | 24 | 1.2 | 0.01 | 1.60 | PASS |
+| sf | 24 | 1.8 | 0.01 | 0.37 | PASS |
+| sf | 175 | 1.2 | 0.01 | 1.20 | PASS |
+| sf | 175 | 1.8 | 0.01 | 0.54 | PASS |
+| fs | -40 | 1.2 | 0.01 | 9.21 | PASS |
+| fs | -40 | 1.8 | 0.01 | 0.38 | PASS |
+| fs | 24 | 1.2 | 0.01 | 3.65 | PASS |
+| fs | 24 | 1.8 | 0.01 | 0.46 | PASS |
+| fs | 175 | 1.2 | 0.01 | 1.82 | PASS |
+| fs | 175 | 1.8 | 0.01 | 0.63 | PASS |
 
-**Worst-case corner for delay:** fs/-40°C/1.2V (8.97 ns)
+**Worst-case corner for delay:** fs/-40°C/1.2V (9.21 ns)
 **Limiting factor for delay:** Low supply voltage + cold temperature + slow process = reduced drive current and higher threshold voltages.
 
 ---
@@ -189,12 +189,12 @@ All 30 PVT corners pass with negligible systematic offset:
 
 | Metric | Mean | Std | Mean + 4.5σ | Spec | Status |
 |--------|------|-----|-------------|------|--------|
-| Offset (mV) | 0.523 | 0.398 | 2.315 | < 5 | **PASS** |
-| Delay (ns) | 0.358 | 0.002 | 0.369 | < 100 | **PASS** |
+| Offset (mV) | 0.477 | 0.364 | 2.113 | < 5 | **PASS** |
+| Delay (ns) | 0.408 | 0.002 | 0.419 | < 100 | **PASS** |
 
-**Mismatch model:** Avt = 5 mV·μm for sky130 nfet_01v8, σ_Vth = Avt / √(W×L) = 0.707 mV
+**Mismatch model:** Avt = 5 mV·μm for sky130 nfet_01v8, σ_Vth = Avt / √(W×L) = 0.645 mV
 
-The offset distribution follows a half-normal distribution (absolute value of Gaussian mismatch). With σ_Vth = 0.707 mV, the 4.5σ bound of 2.315 mV provides 53.7% margin on the 5 mV spec.
+The offset distribution follows a half-normal distribution (absolute value of Gaussian mismatch). With σ_Vth = 0.645 mV, the 4.5σ bound of 2.113 mV provides 57.7% margin on the 5 mV spec.
 
 ---
 
@@ -204,9 +204,9 @@ The offset distribution follows a half-normal distribution (absolute value of Ga
 
 | Corner | Power (μW) | Notes |
 |--------|-----------|-------|
-| tt/24°C/1.8V | 8.2 | Nominal |
-| ss/-40°C/1.2V | 2.0 | Minimum power (slow, cold, low voltage) |
-| ff/175°C/1.8V | 17.5 | Maximum power (fast, hot, high voltage) |
+| tt/24°C/1.8V | 9.25 | Nominal |
+| ss/-40°C/1.2V | ~2.5 | Minimum power (slow, cold, low voltage) |
+| ff/175°C/1.8V | ~19 | Maximum power (fast, hot, high voltage) |
 
 Power is reasonable for a clocked StrongARM comparator in 130nm (zero static power, only dynamic during evaluation).
 
@@ -214,22 +214,22 @@ Power is reasonable for a clocked StrongARM comparator in 130nm (zero static pow
 
 | Component | W×L (μm²) | Count | Total (μm²) |
 |-----------|-----------|-------|-------------|
-| Input pair | 50.0 | 2 | 100.0 |
-| Tail NMOS | 12.5 | 1 | 12.5 |
+| Input pair | 60.0 | 2 | 120.0 |
+| Tail NMOS | 0.75 | 1 | 0.75 |
 | Latch PMOS | 0.5 | 2 | 1.0 |
 | Latch NMOS | 0.5 | 2 | 1.0 |
-| Reset PMOS | 0.45 | 4 | 1.8 |
+| Reset PMOS | 0.30 | 4 | 1.2 |
 | Buffers | 0.45 | 4 | 1.8 |
-| **Total** | | | **118.1 μm²** |
+| **Total** | | | **125.8 μm²** |
 
-Total gate area of 118 μm² is reasonable for a comparator in 130nm. The input pair dominates (79% of total area), which is expected since offset is the primary spec driver.
+Total gate area of 126 μm² is reasonable for a comparator in 130nm. The input pair dominates (95% of total area), which is expected since offset is the primary spec driver. The tail was right-sized from 12.5 μm² to 0.75 μm² after parametric sweep showed minimal impact on performance.
 
 ### Design Margin Summary
 
 | Spec | Target | Worst-Case | Margin (%) | Assessment |
 |------|--------|-----------|------------|------------|
-| Offset | < 5 mV | 2.32 mV | 53.7% | Healthy |
-| Delay | < 100 ns | 8.97 ns | 91.0% | Very large |
+| Offset | < 5 mV | 2.11 mV | 57.7% | Healthy |
+| Delay | < 100 ns | 9.21 ns | 90.8% | Very large |
 
 ---
 
@@ -238,7 +238,7 @@ Total gate area of 118 μm² is reasonable for a comparator in 130nm. The input 
 ### Strengths
 - **Negligible systematic PVT offset** — longer latch L eliminates corner-dependent offset
 - **Large delay margin** — max clock ~20 MHz at worst PVT corner (ss/-40°C/1.2V), much higher at nominal
-- **Moderate area** — 126 μm² total gate area
+- **Moderate area** — 126 μm² total gate area, right-sized tail (5× reduction)
 - **Zero static power** — StrongARM only consumes power during clock evaluation
 
 ### Combined PVT + MC Robustness
@@ -258,7 +258,7 @@ At 10 MHz (default), the design has ample timing margin at all corners.
 
 ### Limitations & Watch Items
 - **Metastability at 0mV input:** At ss/175°C/1.2V with exactly zero differential, the latch may not resolve within the evaluation window. This is inherent to any regenerative comparator and acceptable for normal operation with finite input.
-- **Kickback noise:** The large input pair (W=50μm) will inject significant charge onto the input nodes during CLK transitions. If driving from a high-impedance source, a sampling capacitor or input isolation switch is recommended.
+- **Kickback noise:** The large input pair (W=60μm) will inject significant charge onto the input nodes during CLK transitions. If driving from a high-impedance source, a sampling capacitor or input isolation switch is recommended.
 - **Layout sensitivity:** The input pair must be laid out with careful common-centroid geometry to preserve the offset advantage. Asymmetric routing parasitics could degrade the offset beyond simulation predictions.
 - **Buffer sizing:** The output buffers use fixed minimum-size devices (W=2u/1u, L=0.15u). For driving large loads, additional buffer stages may be needed.
 
@@ -268,11 +268,11 @@ If area is critical, the input pair can be reduced while maintaining acceptable 
 
 | Win | Lin | W×L | MC Offset (4.5σ) | Margin | PVT Offset | Delay | Total Area |
 |-----|-----|-----|-------------------|--------|------------|-------|-----------|
-| **50** | **1.0** | **50** | **2.48 mV** | **50%** | **0.01 mV** | **11.83 ns** | **126 μm²** |
-| 35 | 1.0 | 35 | 2.97 mV | 41% | 0.01 mV | 13.96 ns | 96 μm² |
-| 25 | 1.0 | 25 | 3.51 mV | 30% | 0.09 mV | ~14 ns | 76 μm² |
+| **60** | **1.0** | **60** | **2.11 mV** | **58%** | **0.01 mV** | **9.21 ns** | **126 μm²** |
+| 50 | 1.0 | 50 | 2.48 mV | 50% | 0.01 mV | 8.97 ns | 106 μm² |
+| 35 | 1.0 | 35 | 2.97 mV | 41% | 0.01 mV | ~14 ns | 76 μm² |
 
-The Win=50 design (bold) is recommended for robustness against layout parasitics. Win=35 is a valid alternative for area-constrained designs.
+The Win=60 design (bold) is recommended for robustness against layout parasitics. Win=50 is a valid alternative with slightly less margin but smaller area.
 
 ---
 
@@ -283,14 +283,16 @@ The Win=50 design (bold) is recommended for robustness against layout parasitics
 | 1 | Design intuition + parametric sweep | StrongARM | 1.00 | 2/2 | Llat=0.5μm eliminates PVT offset, Wlat=5μm |
 | 2 | Latch width optimization | StrongARM | 1.00 | 2/2 | Wlat=1μm: 23% faster, 12% lower power |
 | 3 | Tail length optimization | StrongARM | 1.00 | 2/2 | Ltail=0.15μm: further 2% speed + 7% power reduction |
+| 4 | Input pair + tail right-sizing | StrongARM | 1.00 | 2/2 | Win 50→60 (+4% offset margin), Wtail 25→5 (80% less tail area), Wrst 3→2 |
 
 **Approach:** Rather than blind optimization, used analog design intuition to identify the critical design knobs:
-1. Sized input pair (W×L=50μm²) based on analytical offset formula
+1. Sized input pair (W×L=60μm²) based on analytical offset formula
 2. Swept latch and tail parameters to understand sensitivity
 3. Discovered that latch channel length is the critical knob for PVT offset
 4. Verified with waveforms, swap test, and full validation
 5. Tested combined PVT+MC robustness at worst corner
 6. Explored area vs. margin tradeoff for design flexibility
+7. Right-sized tail current (Wtail 25→5) after sweep showed minimal delay impact
 
 ---
 
