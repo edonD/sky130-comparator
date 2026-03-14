@@ -9,7 +9,7 @@ StrongARM latch comparator in SkyWater SKY130 (130nm) technology, designed and v
 | Spec | Target | Worst-Case Result | Margin | Status |
 |------|--------|-------------------|--------|--------|
 | Input-referred offset | < 5 mV | 1.96 mV (MC 4.5σ) | 60.9% | **PASS** |
-| Rise-time delay (CLK→output) | < 100 ns | 8.52 ns (PVT) | 91.5% | **PASS** |
+| Rise-time delay (CLK→output) | < 100 ns | 1.64 ns (PVT) | 98.4% | **PASS** |
 
 **Validation scope:** 30 PVT corners (3 temps × 2 supplies × 5 process) + 200-sample Monte Carlo at mean ± 4.5σ.
 
@@ -45,6 +45,8 @@ Classic StrongARM latch comparator with output buffers:
 - Excellent common-mode rejection through the differential pair
 - Well-understood offset vs. area tradeoff
 
+**LVT Input Pair:** The input differential pair uses `sky130_fd_pr__nfet_01v8_lvt` (low-Vth NMOS) instead of standard-Vth. This provides ~100mV lower threshold voltage, dramatically improving headroom at 1.2V supply and reducing worst-case delay by 5.2× (8.52ns → 1.64ns).
+
 **Output buffers:** Simple CMOS inverters (W_p=2u, W_n=1u, L=0.15u) provide clean digital outputs.
 
 ---
@@ -53,8 +55,8 @@ Classic StrongARM latch comparator with output buffers:
 
 | Parameter | Value | Unit | Role |
 |-----------|-------|------|------|
-| Win | 70.0 | μm | Input pair width — large for low offset |
-| Lin | 1.0 | μm | Input pair length — contributes to W×L area |
+| Win | 70.0 | μm | Input pair width (LVT NMOS) — large for low offset |
+| Lin | 1.0 | μm | Input pair length (LVT NMOS) — contributes to W×L area |
 | Wlatp | 0.5 | μm | PMOS latch width — minimized for fast regeneration |
 | Llatp | 0.5 | μm | PMOS latch length — longer L eliminates PVT offset |
 | Wlatn | 0.5 | μm | NMOS latch width — minimized for fast regeneration |
@@ -79,13 +81,26 @@ With Win=70μm, Lin=1.0μm: σ_Vth = 5/√70 = 0.598 mV. At 4.5σ, the Monte Car
 
 Increasing latch L from 0.20μm to 0.50μm completely eliminated this systematic PVT offset (from ~5mV to <0.01mV at all 30 corners). The mechanism: longer channels reduce short-channel effects that create asymmetric behavior across process corners.
 
-**Tradeoff:** Longer latch L slightly increases delay due to larger parasitic capacitance, but delay was never close to the 100ns spec (worst case: 8.52 ns).
+**Tradeoff:** Longer latch L slightly increases delay due to larger parasitic capacitance, but delay was never close to the 100ns spec (worst case: 1.64 ns with LVT input pair).
 
 ### 3. Minimum Latch Width (W=0.5μm)
 
 After establishing Llat=0.5μm for PVT robustness, we discovered that reducing latch width improves delay. Sweeping from 5μm→1μm→0.5μm showed consistent improvement (11.83→9.13→8.52ns). Smaller latch devices have less parasitic capacitance at the output nodes, allowing faster regeneration. The key offset parameter is the latch **length** (L=0.5μm), not width.
 
-### 4. What Was Tried and Rejected
+### 4. LVT Input Pair (sky130_fd_pr__nfet_01v8_lvt)
+
+**This was the second critical design insight.** The standard-Vth NFET (Vth ≈ 0.56V) left very limited headroom at 1.2V supply, causing 5-8× delay variation between high and low supply corners. Switching to LVT NFET (Vth ≈ 0.4V) for the input pair:
+
+- Reduces worst-case delay from 8.52ns to 1.64ns (5.2× improvement)
+- Virtually eliminates supply voltage sensitivity (delay ratio 1.2V/1.8V drops from 20× to 4×)
+- Power increases ~13% (acceptable for the speed gain)
+- PVT offset remains negligible (Llat=0.5μm still dominates offset PVT behavior)
+
+**Why only the input pair?** The latch and tail use standard-Vth devices because:
+- Latch: Higher Vth provides better regeneration noise margin
+- Tail: Acts as a switch, not limited by Vth at Vgs=VDD
+
+### 5. What Was Tried and Rejected
 
 | Configuration | ff/175/1.8 Offset | fs/175/1.8 Offset | Problem |
 |---|---|---|---|
@@ -106,8 +121,8 @@ The key finding: simply increasing input pair size does NOT fix systematic PVT o
 | Metric | Value |
 |--------|-------|
 | Offset | < 0.01 mV |
-| Rise-time delay | 0.45 ns |
-| Power | 10.73 μW |
+| Rise-time delay | 0.42 ns |
+| Power | 12.05 μW |
 | Output levels | bufp = 1.800V, bufn = 0.000V |
 
 ### Transient Waveforms
@@ -147,39 +162,39 @@ All 30 PVT corners pass with negligible systematic offset:
 
 | Corner | Temp (°C) | Supply (V) | Offset (mV) | Delay (ns) | Status |
 |--------|-----------|------------|-------------|------------|--------|
-| tt | -40 | 1.2 | 0.01 | 4.41 | PASS |
+| tt | -40 | 1.2 | 0.01 | 1.12 | PASS |
 | tt | -40 | 1.8 | 0.01 | 0.38 | PASS |
-| tt | 24 | 1.2 | 0.01 | 2.09 | PASS |
-| tt | 24 | 1.8 | 0.01 | 0.45 | PASS |
-| tt | 175 | 1.2 | 0.01 | 1.31 | PASS |
-| tt | 175 | 1.8 | 0.01 | 0.58 | PASS |
-| ss | -40 | 1.2 | 0.01 | 7.66 | PASS |
-| ss | -40 | 1.8 | 0.01 | 0.46 | PASS |
-| ss | 24 | 1.2 | 0.01 | 3.20 | PASS |
-| ss | 24 | 1.8 | 0.01 | 0.53 | PASS |
-| ss | 175 | 1.2 | 0.01 | 1.79 | PASS |
-| ss | 175 | 1.8 | 0.01 | 0.73 | PASS |
-| ff | -40 | 1.2 | 0.01 | 2.60 | PASS |
-| ff | -40 | 1.8 | 0.01 | 0.30 | PASS |
-| ff | 24 | 1.2 | 0.01 | 1.38 | PASS |
-| ff | 24 | 1.8 | 0.01 | 0.38 | PASS |
-| ff | 175 | 1.2 | 0.01 | 1.00 | PASS |
-| ff | 175 | 1.8 | 0.01 | 0.48 | PASS |
-| sf | -40 | 1.2 | 0.01 | 2.49 | PASS |
-| sf | -40 | 1.8 | 0.01 | 0.34 | PASS |
-| sf | 24 | 1.2 | 0.01 | 1.38 | PASS |
-| sf | 24 | 1.8 | 0.01 | 0.40 | PASS |
-| sf | 175 | 1.2 | 0.01 | 1.04 | PASS |
-| sf | 175 | 1.8 | 0.01 | 0.54 | PASS |
-| fs | -40 | 1.2 | 0.01 | 8.52 | PASS |
-| fs | -40 | 1.8 | 0.01 | 0.39 | PASS |
-| fs | 24 | 1.2 | 0.01 | 3.37 | PASS |
-| fs | 24 | 1.8 | 0.01 | 0.48 | PASS |
-| fs | 175 | 1.2 | 0.01 | 1.80 | PASS |
-| fs | 175 | 1.8 | 0.01 | 0.67 | PASS |
+| tt | 24 | 1.2 | 0.01 | 1.06 | PASS |
+| tt | 24 | 1.8 | 0.01 | 0.42 | PASS |
+| tt | 175 | 1.2 | 0.01 | 1.09 | PASS |
+| tt | 175 | 1.8 | 0.01 | 0.56 | PASS |
+| ss | -40 | 1.2 | 0.01 | 1.64 | PASS |
+| ss | -40 | 1.8 | 0.01 | 0.48 | PASS |
+| ss | 24 | 1.2 | 0.01 | 1.48 | PASS |
+| ss | 24 | 1.8 | 0.01 | 0.56 | PASS |
+| ss | 175 | 1.2 | 0.01 | 1.45 | PASS |
+| ss | 175 | 1.8 | 0.01 | 0.65 | PASS |
+| ff | -40 | 1.2 | 0.01 | 0.79 | PASS |
+| ff | -40 | 1.8 | 0.01 | 0.31 | PASS |
+| ff | 24 | 1.2 | 0.01 | 0.78 | PASS |
+| ff | 24 | 1.8 | 0.01 | 0.37 | PASS |
+| ff | 175 | 1.2 | 0.01 | 0.84 | PASS |
+| ff | 175 | 1.8 | 0.01 | 0.46 | PASS |
+| sf | -40 | 1.2 | 0.01 | 0.89 | PASS |
+| sf | -40 | 1.8 | 0.01 | 0.38 | PASS |
+| sf | 24 | 1.2 | 0.01 | 0.87 | PASS |
+| sf | 24 | 1.8 | 0.01 | 0.38 | PASS |
+| sf | 175 | 1.2 | 0.01 | 0.89 | PASS |
+| sf | 175 | 1.8 | 0.01 | 0.48 | PASS |
+| fs | -40 | 1.2 | 0.01 | 1.57 | PASS |
+| fs | -40 | 1.8 | 0.01 | 0.37 | PASS |
+| fs | 24 | 1.2 | 0.01 | 1.37 | PASS |
+| fs | 24 | 1.8 | 0.01 | 0.44 | PASS |
+| fs | 175 | 1.2 | 0.01 | 1.34 | PASS |
+| fs | 175 | 1.8 | 0.01 | 0.61 | PASS |
 
-**Worst-case corner for delay:** fs/-40°C/1.2V (8.52 ns)
-**Limiting factor for delay:** Low supply voltage + cold temperature + slow process = reduced drive current and higher threshold voltages.
+**Worst-case corner for delay:** ss/-40°C/1.2V (1.64 ns)
+**Key improvement:** LVT input pair reduces worst-case delay from 8.52ns to 1.64ns (5.2× faster). The lower Vth provides much better headroom at 1.2V supply, virtually eliminating the voltage-dependent delay bottleneck.
 
 ---
 
@@ -190,7 +205,7 @@ All 30 PVT corners pass with negligible systematic offset:
 | Metric | Mean | Std | Mean + 4.5σ | Spec | Status |
 |--------|------|-----|-------------|------|--------|
 | Offset (mV) | 0.442 | 0.337 | 1.957 | < 5 | **PASS** |
-| Delay (ns) | 0.454 | 0.005 | 0.475 | < 100 | **PASS** |
+| Delay (ns) | 0.421 | 0.008 | 0.455 | < 100 | **PASS** |
 
 **Mismatch model:** Avt = 5 mV·μm for sky130 nfet_01v8, σ_Vth = Avt / √(W×L) = 0.598 mV
 
@@ -204,9 +219,9 @@ The offset distribution follows a half-normal distribution (absolute value of Ga
 
 | Corner | Power (μW) | Notes |
 |--------|-----------|-------|
-| tt/24°C/1.8V | 10.7 | Nominal |
-| ss/-40°C/1.2V | ~3 | Minimum power (slow, cold, low voltage) |
-| ff/175°C/1.8V | ~22 | Maximum power (fast, hot, high voltage) |
+| tt/24°C/1.8V | 12.1 | Nominal |
+| ss/-40°C/1.2V | ~3.5 | Minimum power (slow, cold, low voltage) |
+| ff/175°C/1.8V | ~24 | Maximum power (fast, hot, high voltage) |
 
 Power is reasonable for a clocked StrongARM comparator in 130nm (zero static power, only dynamic during evaluation).
 
@@ -247,7 +262,7 @@ DC operating point during evaluation (CLK=VDD):
 | Spec | Target | Worst-Case | Margin (%) | Assessment |
 |------|--------|-----------|------------|------------|
 | Offset | < 5 mV | 1.96 mV | 60.9% | Healthy |
-| Delay | < 100 ns | 8.52 ns | 91.5% | Very large |
+| Delay | < 100 ns | 1.64 ns | 98.4% | Massive |
 
 ---
 
@@ -255,7 +270,7 @@ DC operating point during evaluation (CLK=VDD):
 
 ### Strengths
 - **Negligible systematic PVT offset** — longer latch L eliminates corner-dependent offset
-- **Large delay margin** — max clock ~20 MHz at worst PVT corner (ss/-40°C/1.2V), much higher at nominal
+- **Massive delay margin** — max clock >100 MHz at all PVT corners (worst delay 1.64ns)
 - **Moderate area** — 145 μm² total gate area, minimum-sized latch for speed
 - **Zero static power** — StrongARM only consumes power during clock evaluation
 
@@ -269,8 +284,8 @@ Verified that MC mismatch at the worst PVT corner (ss/-40°C/1.2V) still passes:
 
 | PVT Corner | Max Clock | Limiting Factor |
 |------------|-----------|-----------------|
-| tt/24°C/1.8V | > 100 MHz | Buffer drive strength |
-| ss/-40°C/1.2V | ~30 MHz | Regeneration time (~8.5ns) |
+| tt/24°C/1.8V | > 500 MHz | Buffer drive strength |
+| ss/-40°C/1.2V | > 150 MHz | Regeneration time (~1.6ns) |
 
 At 10 MHz (default), the design has ample timing margin at all corners.
 
@@ -305,6 +320,7 @@ The Win=70 design (bold) is recommended for robustness against layout parasitics
 | 4 | Input pair + tail right-sizing | StrongARM | 1.00 | 2/2 | Win 50→60 (+4% offset margin), Wtail 25→5 (80% less tail area), Wrst 3→2 |
 | 5 | Further input pair increase | StrongARM | 1.00 | 2/2 | Win 60→70: offset 2.11→1.96mV (+3% margin), delay 9.21→9.10ns |
 | 6 | Latch + tail optimization | StrongARM | 1.00 | 2/2 | Wlat 1→0.5, Wtail 5→8: delay 9.10→8.52ns (6.4% faster) |
+| 7 | LVT input pair | StrongARM | 1.00 | 2/2 | nfet_01v8_lvt: delay 8.52→1.64ns (5.2× faster!) |
 
 **Approach:** Rather than blind optimization, used analog design intuition to identify the critical design knobs:
 1. Sized input pair (W×L=70μm²) based on analytical offset formula

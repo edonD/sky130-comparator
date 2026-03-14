@@ -22,9 +22,9 @@ Vinm inm 0 DC {Vinm}
 * Tail NMOS (clocked — enables current during evaluation)
 XMtail ntail clk vss vss sky130_fd_pr__nfet_01v8 W={Wtail}u L={Ltail}u nf=1
 
-* Input differential pair (NMOS)
-XM1 d1 inp ntail vss sky130_fd_pr__nfet_01v8 W={Win}u L={Lin}u nf=1
-XM2 d2 inm ntail vss sky130_fd_pr__nfet_01v8 W={Win}u L={Lin}u nf=1
+* Input differential pair (NMOS LVT — lower Vth for better 1.2V headroom)
+XM1 d1 inp ntail vss sky130_fd_pr__nfet_01v8_lvt W={Win}u L={Lin}u nf=1
+XM2 d2 inm ntail vss sky130_fd_pr__nfet_01v8_lvt W={Win}u L={Lin}u nf=1
 
 * Reset PMOS (precharge all internal nodes to VDD when CLK=0)
 XMr1 d1 clk vdd vdd sky130_fd_pr__pfet_01v8 W={Wrst}u L=0.15u nf=1
